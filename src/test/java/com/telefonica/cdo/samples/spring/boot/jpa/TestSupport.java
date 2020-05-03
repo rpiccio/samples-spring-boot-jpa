@@ -20,7 +20,7 @@ import org.testcontainers.containers.MySQLContainer;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class TestSupport {
 
-    public static MySQLContainer<?> db = new MySQLContainer<>("mysql:5");
+    public static MySQLContainer<?> db = new MySQLContainer<>("mysql:8");
 
     static {
         db.start();
@@ -40,6 +40,13 @@ public abstract class TestSupport {
                 "spring.datasource.url=" + buildJdbcUrl(),
                 "spring.datasource.username=" + db.getUsername(),
                 "spring.datasource.password=" + db.getPassword()
+            ).applyTo(configurableApplicationContext.getEnvironment());
+
+            TestPropertyValues.of(
+                "spring.flyway.url=" + buildJdbcUrl(),
+                "spring.flyway.username=" + db.getUsername(),
+                "spring.flyway.password=" + db.getPassword(),
+                "spring.flyway.locations=" + "classpath:db/migration/mysql"
             ).applyTo(configurableApplicationContext.getEnvironment());
 
         }
